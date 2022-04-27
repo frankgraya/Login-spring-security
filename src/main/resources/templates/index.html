@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+    <head>
+        <meta charset="ISO-8859-1">
+        <title>Student Information</title>
+    </head>
+    <body>
+        <div align="center">
+            <h1>Student List</h1>
+
+            <div sec:authorize="isAuthenticated()">
+                Welcome <b><span sec:authentication="name">Usuario</span></b> &nbsp;
+                <i><span sec:authentication="principal.authorities">Rols</span></i>
+            </div>
+
+            <form th:action="@{/logout}" method="post">
+                <input type="submit" value="Logout" />
+            </form>
+
+            <div sec:authorize="hasAnyAuthority('CREATOR', 'ADMIN')">
+                <a href="/new">AAgregar estudiante</a>
+            </div>
+
+            <table border="1" cellpadding="10">
+                <thead>
+                    <tr>
+                        <th>Estudiante ID</th>
+                        <th>Estudiante nombre</th>
+                        <th>Estudiante ciudad</th>
+                        <th sec:authorize="hasAnyAuthority('ADMIN', 'EDITOR')">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="student : ${listStudent}">
+                        <td th:text="${student.sid}">Estudiante ID</td>
+                        <td th:text="${student.sname}">Estudiante nombre</td>
+                        <td th:text="${student.scity}">Estudiante ciudad</td>
+
+                        <td sec:authorize="hasAnyAuthority('ADMIN', 'EDITOR')">
+                            <div sec:authorize="hasAnyAuthority('ADMIN', 'EDITOR')">
+                                <a th:href="@{'/edit/' + ${student.sid}}">Editar</a>
+                            </div> &nbsp;&nbsp;&nbsp;
+                            <div sec:authorize="hasAnyAuthority('ADMIN')">
+                                <a th:href="@{'/delete/' + ${student.sid}}">Borrar</a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>
